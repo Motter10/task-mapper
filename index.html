@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sistemas Embarcados</title>
+  <style>
+    body {
+      height: 100vh;
+      display: flex;
+      flex: 1;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: center;
+    }
+  </style>
+</head>
+
+<body>
+  <script>
+    const app_tests = [{
+      "name": "App0",
+      "number_tasks": 2,
+      "tasks": [{
+        "id": 0,
+        "load": 2000,
+        "execution_time": 30,
+        "priority": 1,
+        "task_communications": [{
+          "id": 1,
+          "load_communication": 300,
+        }, ]
+      }, {
+        "id": 1,
+        "load": 6000,
+        "execution_time": 80,
+        "priority": 0,
+        "task_communications": [{
+          "id": 0,
+          "communication": 100,
+        }, ]
+      }, ],
+    }, {
+      "name": "App1",
+      "number_tasks": 6,
+      "tasks": [{
+        "id": 0,
+        "load": 2900,
+        "execution_time": 120,
+        "priority": 3,
+        "task_communications": [{
+          "id": 1,
+          "communication": 200,
+        }, {
+          "id": 3,
+          "communication": 700,
+        }, ]
+      }, {
+        "id": 1,
+        "load": 600,
+        "execution_time": 380,
+        "priority": 1,
+        "task_communications": [{
+          "id": 0,
+          "communication": 500,
+        }, {
+          "id": 2,
+          "communication": 100,
+        }, ]
+      }, {
+        "id": 2,
+        "load": 1600,
+        "execution_time": 300,
+        "priority": 2,
+        "task_communications": [{
+          "id": 1,
+          "communication": 40,
+        }, {
+          "id": 3,
+          "communication": 110,
+        }, ]
+      }, {
+        "id": 3,
+        "load": 1000,
+        "execution_time": 80,
+        "priority": 0,
+        "task_communications": [{
+          "id": 0,
+          "communication": 50,
+        }, {
+          "id": 2,
+          "communication": 150,
+        }, ]
+      }, ],
+    }, {
+      "name": "App2",
+      "number_tasks": 3,
+      "tasks": [{
+        "id": 0,
+        "load": 4321,
+        "execution_time": 230,
+        "priority": 0,
+        "task_communications": [{
+          "id": 2,
+          "communication": 150,
+        }, {
+          "id": 1,
+          "communication": 150,
+        }, ]
+      }, {
+        "id": 1,
+        "load": 1234,
+        "execution_time": 280,
+        "priority": 1,
+        "task_communications": [{
+          "id": 0,
+          "communication": 130,
+        }, ]
+      }, {
+        "id": 2,
+        "load": 5436,
+        "execution_time": 380,
+        "priority": 2,
+        "task_communications": [{
+          "id": 0,
+          "communication": 450,
+        }, ]
+      }, ],
+    }, ]
+
+    const tests = [{
+      "id": 0,
+      "mpsoc_x": 5,
+      "mpsoc_y": 5,
+      "cluster_x": 5,
+      "cluster_y": 5,
+      "tasks_per_pe": 1,
+      "apps": [{
+        "app_name": "App0",
+        "qtd_apps": 1,
+      }, {
+        "app_name": "App1",
+        "qtd_apps": 1,
+      }, {
+        "app_name": "App2",
+        "qtd_apps": 1,
+      }, ]
+    }, {
+      "id": 1,
+      "mpsoc_x": 3,
+      "mpsoc_y": 3,
+      "cluster_x": 3,
+      "cluster_y": 3,
+      "tasks_per_pe": 2,
+      "apps": [{
+        "app_name": "App0",
+        "qtd_apps": 3,
+      }, {
+        "app_name": "App1",
+        "qtd_apps": 1,
+      }, {
+        "app_name": "App2",
+        "qtd_apps": 1,
+      }, ]
+    }, {
+      "id": 2,
+      "mpsoc_x": 6,
+      "mpsoc_y": 6,
+      "cluster_x": 3,
+      "cluster_y": 3,
+      "tasks_per_pe": 1,
+      "apps": [{
+        "app_name": "App0",
+        "qtd_apps": 1,
+      }, {
+        "app_name": "App1",
+        "qtd_apps": 3,
+      }, ]
+    }, {
+      "id": 3,
+      "mpsoc_x": 6,
+      "mpsoc_y": 6,
+      "cluster_x": 3,
+      "cluster_y": 3,
+      "tasks_per_pe": 2,
+      "apps": [{
+        "app_name": "App0",
+        "qtd_apps": 10,
+      }, {
+        "app_name": "App1",
+        "qtd_apps": 2,
+      }, {
+        "app_name": "App2",
+        "qtd_apps": 8,
+      }, ]
+    }, {
+      "id": 4,
+      "mpsoc_x": 6,
+      "mpsoc_y": 6,
+      "cluster_x": 3,
+      "cluster_y": 3,
+      "tasks_per_pe": 3,
+      "apps": [{
+        "app_name": "App0",
+        "qtd_apps": 10,
+      }, {
+        "app_name": "App1",
+        "qtd_apps": 5,
+      }, {
+        "app_name": "App2",
+        "qtd_apps": 10,
+      }, ]
+    }, ]
+
+    tests.forEach(e => {
+      console.log(e)
+      tbl = document.createElement('table');
+      tbl.style.width = '100px';
+      tbl.style.margin = '30px';
+      var amount = (e.mpsoc_x / e.cluster_x) * (e.mpsoc_y / e.cluster_y);
+      console.log('quantidade: ', amount)
+
+      var cluster = {
+        index: 0,
+        rows: [1, 2, 3],
+        columns: [1, 2, 3],
+      }
+      var clusters = [];
+
+      //exemplo: se tem 4 clustes... clusters.push(0,1,2,3)
+      for (let index = 0; index < amount; index++) {
+        var cluster = {
+          index,
+          rows: [],
+          columns: [],
+          color: 'red'
+        };
+        cluster.index = index;
+        clusters.push(cluster);
+      }
+      console.log('clusters', clusters)
+
+      var index = 0;
+      for (var i = 0; i < e.mpsoc_x; i++) {
+        for (var j = 0; j < e.mpsoc_y; j++) {
+
+          if (i < e.cluster_x && j < e.cluster_y) {
+            clusters[0].rows.push(i);
+            clusters[0].columns.push(j);
+            clusters[0].color = 'red';
+          } else if (i < e.cluster_x && j >= e.cluster_y) {
+            clusters[1].rows.push(i);
+            clusters[1].columns.push(j);
+            clusters[1].color = 'blue';
+          } else if (i >= e.cluster_x && j < e.cluster_y) {
+            clusters[2].rows.push(i);
+            clusters[2].columns.push(j);
+            clusters[2].color = 'green';
+          } else if (i >= e.cluster_x && j >= e.cluster_y) {
+            clusters[3].rows.push(i);
+            clusters[3].columns.push(j);
+            clusters[3].color = 'yellow';
+          }
+        }
+      }
+
+      for (var i = 0; i < e.mpsoc_x; i++) {
+        var tr = tbl.insertRow();
+        for (var j = 0; j < e.mpsoc_y; j++) {
+          var td = tr.insertCell();
+          clusters.forEach(cluster => {
+            if (cluster.rows.includes(i) && cluster.columns.includes(j)) {
+              td.appendChild(document.createTextNode(cluster.index));
+              td.style.backgroundColor = cluster.color;
+            }
+          })
+          td.style.padding = '20px';
+        }
+      }
+      document.body.appendChild(tbl);
+    })
+  </script>
+  <script src="./apps_test.json"></script>
+
+</body>
+
+
+</html>
