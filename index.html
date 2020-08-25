@@ -7,12 +7,28 @@
   <title>Sistemas Embarcados</title>
   <style>
     body {
-      height: 100vh;
       display: flex;
       flex: 1;
       flex-wrap: wrap;
+      flex-direction: column;
       align-items: center;
       justify-content: center;
+    }
+    
+    .mpsoc {
+      display: flex;
+      flex: 1;
+      flex-wrap: wrap;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      margin: 30px;
+    }
+    
+    .cluster {
+      display: flex;
+      flex: 1;
+      flex-direction: column;
     }
   </style>
 </head>
@@ -215,70 +231,103 @@
 
     tests.forEach(e => {
       console.log(e)
-      tbl = document.createElement('table');
-      tbl.style.width = '100px';
-      tbl.style.margin = '30px';
       var amount = (e.mpsoc_x / e.cluster_x) * (e.mpsoc_y / e.cluster_y);
       console.log('quantidade: ', amount)
+      tblMpsoc = document.createElement('table');
+      tblMpsoc.classList.add('mpsoc')
 
-      var cluster = {
-        index: 0,
-        rows: [1, 2, 3],
-        columns: [1, 2, 3],
-      }
-      var clusters = [];
+      for (var iMpsoc = 0; iMpsoc < amount / 2; iMpsoc++) {
+        var trMpsoc = tblMpsoc.insertRow();
+        for (var jMpsoc = 0; jMpsoc < amount / 2; jMpsoc++) {
+          var tdMpsoc = trMpsoc.insertCell();
+          // tdMpsoc.appendChild(document.createTextNode('X'));
 
-      //exemplo: se tem 4 clustes... clusters.push(0,1,2,3)
-      for (let index = 0; index < amount; index++) {
-        var cluster = {
-          index,
-          rows: [],
-          columns: [],
-          color: 'red'
-        };
-        cluster.index = index;
-        clusters.push(cluster);
-      }
-      console.log('clusters', clusters)
+          //novo cluster para cada mpsoc
+          tblCluster = document.createElement('table');
+          tblCluster.id = e.id;
+          tblCluster.classList.add('cluster');
+          for (let i = 1; i < amount; i++) {
+            var trCluster = tblCluster.insertRow();
+            for (let j = 1; j < amount; j++) {
+              var tdCluster = trCluster.insertCell();
+              tdCluster.appendChild(document.createTextNode(iMpsoc + jMpsoc));
 
-      var index = 0;
-      for (var i = 0; i < e.mpsoc_x; i++) {
-        for (var j = 0; j < e.mpsoc_y; j++) {
-
-          if (i < e.cluster_x && j < e.cluster_y) {
-            clusters[0].rows.push(i);
-            clusters[0].columns.push(j);
-            clusters[0].color = 'red';
-          } else if (i < e.cluster_x && j >= e.cluster_y) {
-            clusters[1].rows.push(i);
-            clusters[1].columns.push(j);
-            clusters[1].color = 'blue';
-          } else if (i >= e.cluster_x && j < e.cluster_y) {
-            clusters[2].rows.push(i);
-            clusters[2].columns.push(j);
-            clusters[2].color = 'green';
-          } else if (i >= e.cluster_x && j >= e.cluster_y) {
-            clusters[3].rows.push(i);
-            clusters[3].columns.push(j);
-            clusters[3].color = 'yellow';
-          }
-        }
-      }
-
-      for (var i = 0; i < e.mpsoc_x; i++) {
-        var tr = tbl.insertRow();
-        for (var j = 0; j < e.mpsoc_y; j++) {
-          var td = tr.insertCell();
-          clusters.forEach(cluster => {
-            if (cluster.rows.includes(i) && cluster.columns.includes(j)) {
-              td.appendChild(document.createTextNode(cluster.index));
-              td.style.backgroundColor = cluster.color;
+              tdCluster.style.padding = '15px';
+              tdCluster.style.backgroundColor = 'blue';
             }
-          })
-          td.style.padding = '20px';
+          }
+          tdMpsoc.appendChild(tblCluster);
+          tdMpsoc.style.padding = '15px';
+          tdMpsoc.style.backgroundColor = 'red';
         }
+
       }
-      document.body.appendChild(tbl);
+      document.body.appendChild(tblMpsoc);
+
+      // tbl = document.createElement('table');
+      // tbl.style.width = '100px';
+      // tbl.style.margin = '30px';
+
+      // var cluster = {
+      //   index: 0,
+      //   rows: [1, 2, 3],
+      //   columns: [1, 2, 3],
+      // }
+      // var clusters = [];
+
+      // //exemplo: se tem 4 clustes... clusters.push(0,1,2,3)
+      // for (let index = 0; index < amount; index++) {
+      //   var cluster = {
+      //     index,
+      //     rows: [],
+      //     columns: [],
+      //     color: 'red'
+      //   };
+      //   cluster.index = index;
+      //   clusters.push(cluster);
+      // }
+
+      // var index = 0;
+      // for (var i = 0; i < e.mpsoc_x; i++) {
+      //   for (var j = 0; j < e.mpsoc_y; j++) {
+
+      //     if (i < e.cluster_x && j < e.cluster_y) {
+      //       clusters[0].rows.push(i);
+      //       clusters[0].columns.push(j);
+      //       clusters[0].color = 'red';
+      //     } else if (i < e.cluster_x && j >= e.cluster_y) {
+      //       clusters[1].rows.push(i);
+      //       clusters[1].columns.push(j);
+      //       clusters[1].color = 'blue';
+      //     } else if (i >= e.cluster_x && j < e.cluster_y) {
+      //       clusters[2].rows.push(i);
+      //       clusters[2].columns.push(j);
+      //       clusters[2].color = 'green';
+      //     } else if (i >= e.cluster_x && j >= e.cluster_y) {
+      //       clusters[3].rows.push(i);
+      //       clusters[3].columns.push(j);
+      //       clusters[3].color = 'yellow';
+      //     }
+      //   }
+      // }
+      // console.log('clusters', clusters)
+
+      // for (var i = 0; i < e.mpsoc_x; i++) {
+      //   var tr = tbl.insertRow();
+      //   for (var j = 0; j < e.mpsoc_y; j++) {
+      //     var td = tr.insertCell();
+      //     clusters.forEach(cluster => {
+      //       if (cluster.rows.includes(i) && cluster.columns.includes(j)) {
+      //         td.appendChild(document.createTextNode(cluster.index));
+      //         td.style.backgroundColor = cluster.color;
+      //       }
+      //     })
+      //     td.style.padding = '20px';
+      //   }
+      // }
+      // document.body.appendChild(tbl);
+      // div.appendChild(tbl)
+
     })
   </script>
   <script src="./apps_test.json"></script>
