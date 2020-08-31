@@ -259,8 +259,8 @@
             var trCluster = tblCluster.insertRow();
             for (let j = 0; j < e.cluster_y; j++) {
               var tdCluster = trCluster.insertCell();
-              tdCluster.appendChild(document.createTextNode((iMpsoc + jMpsoc) + (cont) + e.id));
-
+              tdCluster.appendChild(document.createTextNode(i + j));
+              tdCluster.id = (i + j)
               tdCluster.style.padding = '15px';
               tdCluster.style.backgroundColor = 'blue';
             }
@@ -275,11 +275,11 @@
     })
 
 
-    // tests.forEach(e => {
-    //   e.apps.forEach(app => {
-    //     console.log(app_tests.name. === app.name)
-    //   })
-    // })
+    tests.forEach(e => {
+      e.apps.forEach(app => {
+        app.name
+      })
+    })
   </script>
   <script src="./apps_test.json"></script>
 
