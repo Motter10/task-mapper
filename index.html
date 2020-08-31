@@ -34,6 +34,7 @@
 </head>
 
 <body>
+  <button onclick="next()">Próximo</button>
   <script>
     const app_tests = [{
       "name": "App0",
@@ -229,14 +230,20 @@
       }, ]
     }, ]
 
-    tests.forEach(e => {
+    async function next() {
+
+    }
+    tests.forEach(async(e) => {
       console.log(e)
+
       var amount = (e.mpsoc_x / e.cluster_x) * (e.mpsoc_y / e.cluster_y);
       console.log('quantidade: ', amount)
       tblMpsoc = document.createElement('table');
       tblMpsoc.classList.add('mpsoc')
 
+      var cont = 0;
       for (var iMpsoc = 0; iMpsoc < amount / 2; iMpsoc++) {
+        cont++;
         var trMpsoc = tblMpsoc.insertRow();
         for (var jMpsoc = 0; jMpsoc < amount / 2; jMpsoc++) {
           var tdMpsoc = trMpsoc.insertCell();
@@ -250,7 +257,7 @@
             var trCluster = tblCluster.insertRow();
             for (let j = 0; j < e.cluster_y; j++) {
               var tdCluster = trCluster.insertCell();
-              tdCluster.appendChild(document.createTextNode(iMpsoc + jMpsoc));
+              tdCluster.appendChild(document.createTextNode((iMpsoc + jMpsoc) + (cont)));
 
               tdCluster.style.padding = '15px';
               tdCluster.style.backgroundColor = 'blue';
