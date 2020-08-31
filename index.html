@@ -245,19 +245,21 @@
       for (var iMpsoc = 0; iMpsoc < amount / 2; iMpsoc++) {
         cont++;
         var trMpsoc = tblMpsoc.insertRow();
+        trMpsoc.id = iMpsoc;
         for (var jMpsoc = 0; jMpsoc < amount / 2; jMpsoc++) {
           var tdMpsoc = trMpsoc.insertCell();
+          tdMpsoc.id = jMpsoc;
           // tdMpsoc.appendChild(document.createTextNode('X'));
 
           //novo cluster para cada mpsoc
           tblCluster = document.createElement('table');
-          tblCluster.id = e.id;
+          tblCluster.id = (iMpsoc + jMpsoc) + (cont);
           tblCluster.classList.add('cluster');
           for (let i = 0; i < e.cluster_x; i++) {
             var trCluster = tblCluster.insertRow();
             for (let j = 0; j < e.cluster_y; j++) {
               var tdCluster = trCluster.insertCell();
-              tdCluster.appendChild(document.createTextNode((iMpsoc + jMpsoc) + (cont)));
+              tdCluster.appendChild(document.createTextNode((iMpsoc + jMpsoc) + (cont) + e.id));
 
               tdCluster.style.padding = '15px';
               tdCluster.style.backgroundColor = 'blue';
@@ -270,9 +272,14 @@
 
       }
       document.body.appendChild(tblMpsoc);
-
-
     })
+
+
+    // tests.forEach(e => {
+    //   e.apps.forEach(app => {
+    //     console.log(app_tests.name. === app.name)
+    //   })
+    // })
   </script>
   <script src="./apps_test.json"></script>
 
