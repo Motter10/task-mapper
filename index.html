@@ -233,31 +233,31 @@
 
     tests.forEach(async(e) => {
       console.log(e)
-
+      
       var amount = (e.mpsoc_x / e.cluster_x) * (e.mpsoc_y / e.cluster_y);
       console.log('quantidade: ', amount)
       tblMpsoc = document.createElement('table');
       tblMpsoc.classList.add('mpsoc')
-      tblMpsoc.id = "mpsoc" + e.id
+      tblMpsoc.id = "mpsoc_" + e.id
 
       var cont = 0;
 
       for (var iMpsoc = 0; iMpsoc < amount / 2; iMpsoc++) {
         cont++;
         var trMpsoc = tblMpsoc.insertRow();
-        trMpsoc.id = iMpsoc;
+        //trMpsoc.id = iMpsoc;
         for (var jMpsoc = 0; jMpsoc < amount / 2; jMpsoc++) {
           var tdMpsoc = trMpsoc.insertCell();
-          tdMpsoc.id = jMpsoc;
+          //tdMpsoc.id = jMpsoc;
           // tdMpsoc.appendChild(document.createTextNode('X'));
 
           //novo cluster para cada mpsoc
           tblCluster = document.createElement('table');
-          tblCluster.id = "cluster" + (iMpsoc + jMpsoc) + (cont);
-          tblCluster.classList.add('cluster');
+          //tblCluster.id = "cluster_" + (iMpsoc + jMpsoc) + (cont);
+          tblCluster.classList.add("cluster_" + iMpsoc + jMpsoc);
           for (let i = 0; i < e.cluster_x; i++) {
             var trCluster = tblCluster.insertRow();
-            trCluster.id = i
+            trCluster.id = "row_" + i;
             for (let j = 0; j < e.cluster_y; j++) {
               var tdCluster = trCluster.insertCell();
               tdCluster.appendChild(document.createTextNode(i + j));
@@ -274,6 +274,22 @@
       }
       document.body.appendChild(tblMpsoc);
     })
+
+    paintItem("mpsoc_0", "cluster_00",2, 2)
+
+    function paintItem(mpsoc, clust, row, column) {
+
+      var tabela = document.getElementById(mpsoc);
+      console.log(tabela);
+      var cluster = tabela.getElementsByClassName(clust);
+      console.log(cluster);
+
+      var linhas = cluster[0].getElementsByTagName('tr');
+      console.log(linhas);      
+      var col = linhas[row].getElementsByTagName('td');
+      console.log(col);
+      col[column].style.backgroundColor = "orange";
+    }
 
     function wait(milliseconds) {
       return new Promise(resolve => setTimeout(resolve, milliseconds));
