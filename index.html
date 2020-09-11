@@ -14,7 +14,7 @@
       align-items: center;
       justify-content: center;
     }
-    
+
     .mpsoc {
       display: flex;
       flex: 1;
@@ -24,7 +24,7 @@
       justify-content: center;
       margin: 30px;
     }
-    
+
     .cluster {
       display: flex;
       flex: 1;
@@ -47,7 +47,7 @@
         "task_communications": [{
           "id": 1,
           "load_communication": 300,
-        }, ]
+        },]
       }, {
         "id": 1,
         "load": 6000,
@@ -56,8 +56,8 @@
         "task_communications": [{
           "id": 0,
           "communication": 100,
-        }, ]
-      }, ],
+        },]
+      },],
     }, {
       "name": "App1",
       "number_tasks": 6,
@@ -72,7 +72,7 @@
         }, {
           "id": 3,
           "communication": 700,
-        }, ]
+        },]
       }, {
         "id": 1,
         "load": 600,
@@ -84,7 +84,7 @@
         }, {
           "id": 2,
           "communication": 100,
-        }, ]
+        },]
       }, {
         "id": 2,
         "load": 1600,
@@ -96,7 +96,7 @@
         }, {
           "id": 3,
           "communication": 110,
-        }, ]
+        },]
       }, {
         "id": 3,
         "load": 1000,
@@ -108,8 +108,8 @@
         }, {
           "id": 2,
           "communication": 150,
-        }, ]
-      }, ],
+        },]
+      },],
     }, {
       "name": "App2",
       "number_tasks": 3,
@@ -124,7 +124,7 @@
         }, {
           "id": 1,
           "communication": 150,
-        }, ]
+        },]
       }, {
         "id": 1,
         "load": 1234,
@@ -133,7 +133,7 @@
         "task_communications": [{
           "id": 0,
           "communication": 130,
-        }, ]
+        },]
       }, {
         "id": 2,
         "load": 5436,
@@ -142,9 +142,9 @@
         "task_communications": [{
           "id": 0,
           "communication": 450,
-        }, ]
-      }, ],
-    }, ]
+        },]
+      },],
+    },]
 
     const tests = [{
       "id": 0,
@@ -162,7 +162,7 @@
       }, {
         "app_name": "App2",
         "qtd_apps": 1,
-      }, ]
+      },]
     }, {
       "id": 1,
       "mpsoc_x": 3,
@@ -179,7 +179,7 @@
       }, {
         "app_name": "App2",
         "qtd_apps": 1,
-      }, ]
+      },]
     }, {
       "id": 2,
       "mpsoc_x": 6,
@@ -193,7 +193,7 @@
       }, {
         "app_name": "App1",
         "qtd_apps": 3,
-      }, ]
+      },]
     }, {
       "id": 3,
       "mpsoc_x": 6,
@@ -210,7 +210,7 @@
       }, {
         "app_name": "App2",
         "qtd_apps": 8,
-      }, ]
+      },]
     }, {
       "id": 4,
       "mpsoc_x": 6,
@@ -227,13 +227,13 @@
       }, {
         "app_name": "App2",
         "qtd_apps": 10,
-      }, ]
-    }, ]
+      },]
+    },]
 
 
-    tests.forEach(async(e) => {
+    tests.forEach(async (e) => {
       console.log(e)
-      
+
       var amount = (e.mpsoc_x / e.cluster_x) * (e.mpsoc_y / e.cluster_y);
       console.log('quantidade: ', amount)
       tblMpsoc = document.createElement('table');
@@ -275,25 +275,36 @@
       document.body.appendChild(tblMpsoc);
     })
 
-    paintItem("mpsoc_0", "cluster_00",2, 2)
+    //paintItem("mpsoc_0", "cluster_00",2 , 2);
 
-    function paintItem(mpsoc, clust, row, column) {
+    function paintItem(mpsoc, clust, app, row, column) {
 
       var tabela = document.getElementById(mpsoc);
-      console.log(tabela);
+      //console.log(tabela);
       var cluster = tabela.getElementsByClassName(clust);
-      console.log(cluster);
-
+      //console.log(cluster);
       var linhas = cluster[0].getElementsByTagName('tr');
-      console.log(linhas);      
+      //console.log(linhas);      
       var col = linhas[row].getElementsByTagName('td');
-      console.log(col);
+      //console.log(col[column]);
       col[column].style.backgroundColor = "orange";
+      col[column].innerHTML = app;
+
+      linhas = null;
+      col = null;
     }
 
     function wait(milliseconds) {
       return new Promise(resolve => setTimeout(resolve, milliseconds));
     }
+
+    var cont = 0;
+    var linhas = 6;
+    var colunas = 6;
+    //var matriz = new Array(colunas);
+
+    matriz = Array(colunas).fill(0).map(x => Array(linhas).fill(0))
+
     async function onLoad() {
 
       for (let index = 0; index < tests.length; index++) {
@@ -311,8 +322,70 @@
 
             for (let index = 0; index < app_tests[i].tasks.length; index++) {
               const task = app_tests[i].tasks[index];
-              await wait(1000);
-              console.log(test.id, app_tests[i].name, task.id)
+              await wait(500);
+              //console.log(test.id, app_tests[i].name, task.id)
+
+              var posicaoColuna;
+              var posicaoLinhas;
+              if (test.id == 0)//Primeiro mpsoc
+              {
+
+                console.table(matriz);
+                console.log("Col: " + posicaoColuna + ", Lin: " + posicaoLinhas)
+
+                if (cont == 0) {
+                  posicaoColuna = (colunas / 2) - 1;
+                  posicaoLinhas = (linhas / 2) - 1;
+                }
+                if (cont == 1) {
+                  posicaoColuna = posicaoColuna -1;
+                  posicaoLinhas = posicaoLinhas;
+                }
+                if (cont == 2) {
+                  posicaoColuna = posicaoColuna +1;
+                  posicaoLinhas = posicaoLinhas -1;
+                }
+                if (cont == 3) {
+                  posicaoColuna = posicaoColuna +1;
+                  posicaoLinhas = posicaoLinhas +1;
+                }
+                if (cont == 4) {
+                  posicaoColuna = posicaoColuna -1;
+                  posicaoLinhas = posicaoLinhas +1;
+                }
+                if (cont == 5) {
+                  posicaoColuna = posicaoColuna - 2;
+                  posicaoLinhas = posicaoLinhas - 1;
+                }                
+                if (cont == 6) {
+                  posicaoColuna = posicaoColuna +1;
+                  posicaoLinhas = posicaoLinhas -1;
+                }
+                if (cont == 7) {
+                  posicaoColuna = posicaoColuna +1;
+                  posicaoLinhas = posicaoLinhas -1;
+                }                
+                if (cont == 8) {
+                  posicaoColuna = posicaoColuna +1;
+                  posicaoLinhas = posicaoLinhas +1;
+                }
+
+                //matriz[posicaoColuna][posicaoLinhas] = 1;
+
+                paintItem("mpsoc_" + test.id, "cluster_00", app_tests[i].name, posicaoLinhas, posicaoColuna)
+                /*
+                for (var coluna = 0; coluna < colunas; coluna++) {
+                  for (var linha = 0; linha < linhas; linha++) {
+                    if (matriz[coluna][linha] == 1) {
+                    }
+
+                  }
+                }
+                */
+                console.log("Cont: "+ cont);
+                cont++;                
+              }
+
 
             }
           }
