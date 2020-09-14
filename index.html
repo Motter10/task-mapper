@@ -230,12 +230,9 @@
       }, ]
     }, ]
 
-
     tests.forEach(async(e) => {
-      console.log(e)
-      
+
       var amount = (e.mpsoc_x / e.cluster_x) * (e.mpsoc_y / e.cluster_y);
-      console.log('quantidade: ', amount)
       tblMpsoc = document.createElement('table');
       tblMpsoc.classList.add('mpsoc')
       tblMpsoc.id = "mpsoc_" + e.id
@@ -260,9 +257,17 @@
             trCluster.id = "row_" + i;
             for (let j = 0; j < e.cluster_y; j++) {
               var tdCluster = trCluster.insertCell();
-              tdCluster.appendChild(document.createTextNode(i + j));
+
+              var node = ''
+              for (let index = 0; index < e.tasks_per_pe; index++) {
+                node += 'X '
+              }
+              tdCluster.appendChild(document.createTextNode(node));
+              // tdCluster.appendChild(document.createTextNode(i + j));
               tdCluster.id = (i + j)
               tdCluster.style.padding = '15px';
+              tdCluster.style.width = '60px';
+              tdCluster.style.height = '60px';
               tdCluster.style.backgroundColor = 'blue';
             }
           }
@@ -275,25 +280,236 @@
       document.body.appendChild(tblMpsoc);
     })
 
-    paintItem("mpsoc_0", "cluster_00",2, 2)
-
-    function paintItem(mpsoc, clust, row, column) {
-
-      var tabela = document.getElementById(mpsoc);
-      console.log(tabela);
-      var cluster = tabela.getElementsByClassName(clust);
-      console.log(cluster);
-
-      var linhas = cluster[0].getElementsByTagName('tr');
-      console.log(linhas);      
-      var col = linhas[row].getElementsByTagName('td');
-      console.log(col);
-      col[column].style.backgroundColor = "orange";
-    }
+    // paintItem("mpsoc_1", "cluster_00", 0, 0)
 
     function wait(milliseconds) {
       return new Promise(resolve => setTimeout(resolve, milliseconds));
     }
+
+    function getColorItem(mpsoc, clust, row, column) {
+
+      try {
+        var tabela = document.getElementById(mpsoc);
+        // console.log(tabela);
+        var cluster = tabela.getElementsByClassName(clust);
+        // console.log(cluster);
+
+        var linhas = cluster[0].getElementsByTagName('tr');
+        // console.log(linhas);
+        var col = linhas[row].getElementsByTagName('td');
+        // console.log(col);
+        return col[column].style.backgroundColor
+      } catch {
+        return 'no'
+      }
+    }
+
+    function getTextItem(mpsoc, clust, row, column) {
+
+      try {
+        var tabela = document.getElementById(mpsoc);
+        // console.log(tabela);
+        var cluster = tabela.getElementsByClassName(clust);
+        // console.log(cluster);
+
+        var linhas = cluster[0].getElementsByTagName('tr');
+        // console.log(linhas);
+        var col = linhas[row].getElementsByTagName('td');
+        // console.log(col);
+        let text = col[column].textContent
+
+        return text
+
+      } catch {
+        return 'no'
+      }
+    }
+
+
+
+    function paintItem(mpsoc, clust, row, column, color, appName, taskId) {
+
+      var tabela = document.getElementById(mpsoc);
+      // console.log(tabela);
+      var cluster = tabela.getElementsByClassName(clust);
+      // console.log(cluster);
+
+      var linhas = cluster[0].getElementsByTagName('tr');
+      // console.log(linhas);
+      var col = linhas[row].getElementsByTagName('td');
+      // console.log(col);
+      col[column].style.backgroundColor = color;
+      let text = col[column].textContent;
+      textSplitted = text.split(' ')
+
+      let indexText = textSplitted.findIndex(text => text === 'X')
+      if (indexText >= 0)
+        textSplitted[indexText] = `${appName}task:${taskId} `;
+
+      var node = ''
+      for (let index = 0; index < textSplitted.length; index++) {
+        const element = textSplitted[index]
+        node += `${element} `
+      }
+      col[column].textContent = node
+
+    }
+
+    function chooseCluster(mpsoc) {
+      var tabela = document.getElementById(mpsoc);
+      var rowsOfClusters = tabela.rows.length;
+
+      //inicializa no cluster_00
+      let blue_count = 0;
+      let last_blue_count = 0;
+      let whichCluster = 'cluster_00';
+
+      //passa através dos clusters que estão dentro do mpsoc
+      for (let rCluster = 0; rCluster < rowsOfClusters; rCluster++) {
+        for (let cCluster = 0; cCluster < rowsOfClusters; cCluster++) {
+
+          var cluster = tabela.getElementsByClassName(`cluster_${rCluster}${cCluster}`);
+          var rows = cluster[0].getElementsByTagName('tr');
+          var rowsOfItems = rows.length;
+
+          //passa através dos items de cada cluster
+          for (let rItem = 0; rItem < rowsOfItems; rItem++) {
+            // await wait(1000)
+            for (let cItem = 0; cItem < rowsOfItems; cItem++) {
+              // await wait(1000)
+              let color = getColorItem(mpsoc, `cluster_${rCluster}${cCluster}`, rItem, cItem);
+              if (color === 'blue') {
+                blue_count++
+              }
+            }
+          }
+          //depois de passar todos os items
+          if (blue_count > last_blue_count) {
+            whichCluster = `cluster_${rCluster}${cCluster}`
+            last_blue_count = blue_count
+          }
+          blue_count = 0;
+
+        }
+      }
+      return whichCluster
+
+
+    }
+
+    function chooseItem(mpsoc, clust) {
+      var tabela = document.getElementById(mpsoc);
+      var cluster = tabela.getElementsByClassName(clust);
+      var rows = cluster[0].getElementsByTagName('tr');
+      var rowsOfItems = rows.length;
+
+
+      let center = [parseInt(rowsOfItems / 2), parseInt(rowsOfItems / 2)]
+      let orange = ''
+      let blue = ''
+      let nodeText = ''
+
+      let chances = 0;
+
+      let [row, column] = center;
+
+      let direction = 'center';
+
+      while (true) {
+
+        let color = getColorItem(mpsoc, clust, row, column);
+        let text = getTextItem(mpsoc, clust, row, column) || '';
+        debugger
+        if (color === 'blue' || (color === 'orange' && text.includes('X'))) {
+          return [row, column]
+        } else {
+
+          switch (direction) {
+
+            case 'center':
+              column--;
+              direction = 'left'
+              break;
+
+            case 'left':
+
+              chances++
+              for (let index = 0; index < chances; index++) {
+
+                orange = getColorItem(mpsoc, clust, row, column + 1)
+                blue = getColorItem(mpsoc, clust, row - 1, column + 1)
+                nodeText = getTextItem(mpsoc, clust, row - 1, column + 1);
+
+                row--;
+                column++;
+                if (orange === 'orange' && blue === 'blue' || (blue === 'orange' && nodeText.includes('X'))) {
+                  return [row, column]
+                }
+              }
+
+              direction = 'top';
+              break;
+
+            case 'top':
+              for (let index = 0; index < chances; index++) {
+
+                orange = getColorItem(mpsoc, clust, row + 1, column)
+                blue = getColorItem(mpsoc, clust, row + 1, column + 1)
+                nodeText = getTextItem(mpsoc, clust, row + 1, column + 1);
+
+                row++;
+                column++;
+                if (orange === 'orange' && blue === 'blue' || (blue === 'orange' && nodeText.includes('X'))) {
+                  return [row, column]
+                }
+              }
+
+              direction = 'right';
+              break;
+
+            case 'right':
+              for (let index = 0; index < chances; index++) {
+
+                orange = getColorItem(mpsoc, clust, row, column - 1)
+                blue = getColorItem(mpsoc, clust, row + 1, column - 1)
+                nodeText = getTextItem(mpsoc, clust, row + 1, column - 1);
+
+                row++;
+                column--;
+
+                if (orange === 'orange' && blue === 'blue' || (blue === 'orange' && nodeText.includes('X'))) {
+                  return [row, column]
+                }
+              }
+              direction = 'bottom';
+              break;
+
+            case 'bottom':
+              for (let index = 0; index < chances; index++) {
+                orange = getColorItem(mpsoc, clust, row - 1, column)
+                blue = getColorItem(mpsoc, clust, row - 1, column - 1)
+                nodeText = getTextItem(mpsoc, clust, row - 1, column - 1);
+
+                row--;
+                column--;
+
+                if (orange === 'orange' && blue === 'blue' || (blue === 'orange' && nodeText.includes('X'))) {
+                  return [row, column]
+                }
+              }
+              direction = 'center';
+              break;
+
+            default:
+              break;
+          }
+
+        }
+      }
+
+
+    }
+
     async function onLoad() {
 
       for (let index = 0; index < tests.length; index++) {
@@ -311,8 +527,27 @@
 
             for (let index = 0; index < app_tests[i].tasks.length; index++) {
               const task = app_tests[i].tasks[index];
-              await wait(1000);
+
               console.log(test.id, app_tests[i].name, task.id)
+
+              await wait(500)
+              let cluster = await chooseCluster(`mpsoc_${test.id}`)
+              let item = await chooseItem(`mpsoc_${test.id}`, cluster)
+              let [row, column] = item
+              paintItem(`mpsoc_${test.id}`, cluster, row, column, 'orange', app_tests[i].name, task.id)
+                /*
+                  00 01 02
+                  10 11 12 --> 3%2 = 1
+                  20 21 22
+
+                  00 01 02 03 04
+                  10 11 12 13 14
+                  20 21 22 23 24
+                  30 31 32 33 34
+                  40 41 42 43 44
+
+                */
+                // console.log(`mpsoc_${test.id}`, cluster, 0, 0)
 
             }
           }
